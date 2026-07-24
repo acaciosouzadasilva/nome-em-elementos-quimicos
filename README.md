@@ -15,8 +15,8 @@ Feedback Visual: Destaque para os elementos encontrados vs. caracteres não mape
 Interface Responsiva: Adaptada para telas de celulares, tablets e computadores.
 
 🛠️ Tecnologias Utilizadas
-Frontend: HTML5, CSS3, JavaScript (ES6+) / [Adicione o framework se usou React, Vue, etc.]
+Frontend: HTML5, CSS3, JavaScript (ES6+) 
 
 Dados: JSON / Objetos JS contendo as propriedades da Tabela Periódica.
 
-Deploy: [Ex: Vercel / Netlify / GitHub Pages]
+Deploy: Github Pages
