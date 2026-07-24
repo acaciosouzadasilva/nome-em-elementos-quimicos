@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nome em Elementos Químicos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px 30px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: linear-gradient(to right, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: #94a3b8;
+      font-size: 1rem;
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 12px;
+      max-width: 500px;
+      margin: 0 auto 30px auto;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 2px solid #334155;
+      background: #0f172a;
+      color: #fff;
+      font-size: 1.1rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+    }
+
+    .btn-primary {
+      padding: 14px 28px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .results-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 20px;
+      min-height: 140px;
+      align-items: center;
+    }
+
+    /* Cartão do Elemento Químico */
+    .element-card {
+      width: 110px;
+      height: 125px;
+      background: #1e293b;
+      border: 2px solid #38bdf8;
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      position: relative;
+      transition: transform 0.3s ease;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .element-card:hover {
+      transform: translateY(-5px) scale(1.03);
+      border-color: #818cf8;
+    }
+
+    .element-card.not-found {
+      border-color: #64748b;
+      background: #0f172a;
+      opacity: 0.6;
+    }
+
+    .atomic-number {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-align: left;
+    }
+
+    .symbol {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #f8fafc;
+      text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+      line-height: 1;
+    }
+
+    .element-name {
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      text-transform: capitalize;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .atomic-mass {
+      font-size: 0.65rem;
+      color: #64748b;
+    }
+
+    /* Botão de Download */
+    .download-action {
+      margin-top: 25px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-download:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    /* Seção de Apoio / Call to Action */
+    .support-section {
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .support-text {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .btn-support {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #009ee3 0%, #0072bb 100%);
+      color: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 15px rgba(0, 158, 227, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-support:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 158, 227, 0.5);
+    }
+
+    .btn-support svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    /* Canvas invisível para renderização do PNG */
+    #hiddenCanvas {
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsividade */
+    @media (max-width: 600px) {
+      .input-group {
+        flex-direction: column;
+      }
+
+      .btn-primary, .btn-download, .btn-support {
+        width: 100%;
+      }
+
+      .element-card {
+        width: 85px;
+        height: 100px;
+        padding: 6px 8px;
+      }
+
+      .symbol {
+        font-size: 1.7rem;
+      }
+
+      .element-name {
+        font-size: 0.65rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Tabela Periódica Pessoal</h1>
+    <p class="subtitle">Digite um nome ou palavra para converter em elementos químicos</p>
+
+    <div class="input-group">
+      <input type="text" id="nameInput" placeholder="Ex: Paulinho, Acacio, Cassio..." value="Paulinho">
+      <button class="btn-primary" onclick="convertName()">Gerar</button>
+    </div>
+
+    <!-- Onde os cartões renderizam no HTML -->
+    <div class="results-container" id="results"></div>
+
+    <!-- Botão de Download da Imagem -->
+    <div class="download-action">
+      <button class="btn-download" onclick="gerarEBaixarImagem()">
+        📷 Baixar Imagem para Compartilhar
+      </button>
+    </div>
+
+    <!-- Seção Call to Action - Apoie o Projeto via Mercado Pago -->
+    <div class="support-section">
+      <p class="support-text">Gostou da ferramenta? Apoie o desenvolvimento do nosso projeto!</p>
+      <a href="#" id="mercadopagoLink" target="_blank" rel="noopener noreferrer" class="btn-support">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+        </svg>
+        Apoiar com Mercado Pago
+      </a>
+    </div>
+  </div>
+
+  <!-- Canvas invisível utilizado no processamento do download -->
+  <canvas id="hiddenCanvas"></canvas>
+
+  <script>
+    // =========================================================================
+    // CONFIGURAÇÕES EDITÁVEIS:
+    // =========================================================================
+    
+    // 1. Seu link de pagamento / doação do Mercado Pago:
+    const MERCADO_PAGO_URL = "https://www.mercadopago.com.br"; // <-- EDITAR AQUI O SEU LINK
+
+    // 2. O endereço/link exibido na imagem gerada para compartilhamento:
+    const PLATAFORMA_URL = "seusite.com.br"; // <-- EDITAR AQUI O ENDEREÇO DA PLATAFORMA
+
+
+    // Atualiza o link do Mercado Pago ao carregar a página
+    document.addEventListener("DOMContentLoaded", () => {
+      const supportBtn = document.getElementById("mercadopagoLink");
+      if (supportBtn) {
+        supportBtn.href = MERCADO_PAGO_URL;
+      }
+    });
+
+    // Banco de dados com os elementos químicos (Símbolo -> Nome, Nº Atômico e Massa)
+    const elementsDB = {
+      "H":  { name: "Hidrogênio", number: 1, mass: "1.008" },
+      "He": { name: "Hélio", number: 2, mass: "4.0026" },
+      "Li": { name: "Lítio", number: 3, mass: "6.94" },
+      "Be": { name: "Berílio", number: 4, mass: "9.0122" },
+      "B":  { name: "Boro", number: 5, mass: "10.81" },
+      "C":  { name: "Carbono", number: 6, mass: "12.011" },
+      "N":  { name: "Nitrogênio", number: 7, mass: "14.007" },
+      "O":  { name: "Oxigênio", number: 8, mass: "15.999" },
+      "F":  { name: "Flúor", number: 9, mass: "18.998" },
+      "Ne": { name: "Neônio", number: 10, mass: "20.180" },
+      "Na": { name: "Sódio", number: 11, mass: "22.990" },
+      "Mg": { name: "Magnésio", number: 12, mass: "24.305" },
+      "Al": { name: "Alumínio", number: 13, mass: "26.982" },
+      "Si": { name: "Silício", number: 14, mass: "28.085" },
+      "P":  { name: "Fósforo", number: 15, mass: "30.974" },
+      "S":  { name: "Enxofre", number: 16, mass: "32.06" },
+      "Cl": { name: "Cloro", number: 17, mass: "35.45" },
+      "Ar": { name: "Argônio", number: 18, mass: "39.948" },
+      "K":  { name: "Potássio", number: 19, mass: "39.098" },
+      "Ca": { name: "Cálcio", number: 20, mass: "40.078" },
+      "Sc": { name: "Escândio", number: 21, mass: "44.956" },
+      "Ti": { name: "Titânio", number: 22, mass: "47.867" },
+      "V":  { name: "Vanádio", number: 23, mass: "50.942" },
+      "Cr": { name: "Crômio", number: 24, mass: "51.996" },
+      "Mn": { name: "Manganês", number: 25, mass: "54.938" },
+      "Fe": { name: "Ferro", number: 26, mass: "55.845" },
+      "Co": { name: "Cobalto", number: 27, mass: "58.933" },
+      "Ni": { name: "Níquel", number: 28, mass: "58.693" },
+      "Cu": { name: "Cobre", number: 29, mass: "63.546" },
+      "Zn": { name: "Zinco", number: 30, mass: "65.38" },
+      "Ga": { name: "Gálio", number: 31, mass: "69.723" },
+      "Ge": { name: "Germânio", number: 32, mass: "72.630" },
+      "As": { name: "Arsênio", number: 33, mass: "74.922" },
+      "Se": { name: "Selênio", number: 34, mass: "78.971" },
+      "Br": { name: "Bromo", number: 35, mass: "79.904" },
+      "Kr": { name: "Criptônio", number: 36, mass: "83.798" },
+      "Rb": { name: "Rubídio", number: 37, mass: "85.468" },
+      "Sr": { name: "Estrôncio", number: 38, mass: "87.62" },
+      "Y":  { name: "Ítrio", number: 39, mass: "88.906" },
+      "Zr": { name: "Zircônio", number: 40, mass: "91.224" },
+      "Nb": { name: "Nióbio", number: 41, mass: "92.906" },
+      "Mo": { name: "Molibdênio", number: 42, mass: "95.95" },
+      "Tc": { name: "Tecnécio", number: 43, mass: "98" },
+      "Ru": { name: "Rutênio", number: 44, mass: "101.07" },
+      "Rh": { name: "Ródio", number: 45, mass: "102.91" },
+      "Pd": { name: "Paládio", number: 46, mass: "106.42" },
+      "Ag": { name: "Prata", number: 47, mass: "107.87" },
+      "Cd": { name: "Cádmio", number: 48, mass: "112.41" },
+      "In": { name: "Índio", number: 49, mass: "114.82" },
+      "Sn": { name: "Estanho", number: 50, mass: "118.71" },
+      "Sb": { name: "Antimônio", number: 51, mass: "121.76" },
+      "Te": { name: "Telúrio", number: 52, mass: "127.60" },
+      "I":  { name: "Iodo", number: 53, mass: "126.90" },
+      "Xe": { name: "Xenônio", number: 54, mass: "131.29" },
+      "Cs": { name: "Césio", number: 55, mass: "132.91" },
+      "Ba": { name: "Bário", number: 56, mass: "137.33" },
+      "La": { name: "Lantânio", number: 57, mass: "138.91" },
+      "Ce": { name: "Cério", number: 58, mass: "140.12" },
+      "Pr": { name: "Praseodímio", number: 59, mass: "140.91" },
+      "Nd": { name: "Neodímio", number: 60, mass: "144.24" },
+      "Pm": { name: "Promécio", number: 61, mass: "145" },
+      "Sm": { name: "Samário", number: 62, mass: "150.36" },
+      "Eu": { name: "Európio", number: 63, mass: "151.96" },
+      "Gd": { name: "Gadolínio", number: 64, mass: "157.25" },
+      "Tb": { name: "Térbio", number: 65, mass: "158.93" },
+      "Dy": { name: "Disprósio", number: 66, mass: "162.50" },
+      "Ho": { name: "Hólmio", number: 67, mass: "164.93" },
+      "Er": { name: "Érbio", number: 68, mass: "167.26" },
+      "Tm": { name: "Túlio", number: 69, mass: "168.93" },
+      "Yb": { name: "Itérbio", number: 70, mass: "173.05" },
+      "Lu": { name: "Lutécio", number: 71, mass: "174.97" },
+      "Hf": { name: "Háfnio", number: 72, mass: "178.49" },
+      "Ta": { name: "Tântalo", number: 73, mass: "180.95" },
+      "W":  { name: "Tungstênio", number: 74, mass: "183.84" },
+      "Re": { name: "Rênio", number: 75, mass: "186.21" },
+      "Os": { name: "Ósmio", number: 76, mass: "190.23" },
+      "Ir": { name: "Irídio", number: 77, mass: "192.22" },
+      "Pt": { name: "Platina", number: 78, mass: "195.08" },
+      "Au": { name: "Ouro", number: 79, mass: "196.97" },
+      "Hg": { name: "Mercúrio", number: 80, mass: "200.59" },
+      "Tl": { name: "Tálio", number: 81, mass: "204.38" },
+      "Pb": { name: "Chumbo", number: 82, mass: "207.2" },
+      "Bi": { name: "Bismuto", number: 83, mass: "208.98" },
+      "Po": { name: "Polônio", number: 84, mass: "209" },
+      "At": { name: "Astato", number: 85, mass: "210" },
+      "Rn": { name: "Radônio", number: 86, mass: "222" },
+      "Fr": { name: "Frâncio", number: 87, mass: "223" },
+      "Ra": { name: "Rádio", number: 88, mass: "226" },
+      "Ac": { name: "Actínio", number: 89, mass: "227" },
+      "Th": { name: "Tório", number: 90, mass: "232.04" },
+      "Pa": { name: "Protactínio", number: 91, mass: "231.04" },
+      "U":  { name: "Urânio", number: 92, mass: "238.03" }
+    };
+
+    let currentMatchedElements = [];
+
+    // Algoritmo de correspondência recursiva
+    function parseTextToElements(text) {
+      text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().replace(/[^A-Z]/g, '');
+      
+      function backtrack(index) {
+        if (index === text.length) return [];
+
+        if (index + 1 < text.length) {
+          let twoChars = text[index] + text[index + 1].toLowerCase();
+          if (elementsDB[twoChars]) {
+            let result = backtrack(index + 2);
+            if (result !== null) {
+              return [{ symbol: twoChars, ...elementsDB[twoChars] }].concat(result);
+            }
+          }
+        }
+
+        let oneChar = text[index];
+        if (elementsDB[oneChar]) {
+          let result = backtrack(index + 1);
+          if (result !== null) {
+            return [{ symbol: oneChar, ...elementsDB[oneChar] }].concat(result);
+          }
+        }
+
+        let result = backtrack(index + 1);
+        return [{ symbol: oneChar, name: "Desconhecido", number: "-", mass: "-" }, ...(result || [])];
+      }
+
+      return backtrack(0) || [];
+    }
+
+    // Função para renderizar os quadradinhos no HTML
+    function convertName() {
+      const input = document.getElementById('nameInput').value;
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (!input.trim()) return;
+
+      currentMatchedElements = parseTextToElements(input);
+
+      currentMatchedElements.forEach((el, i) => {
+        const card = document.createElement('div');
+        const isUnknown = el.number === "-";
+        
+        card.className = `element-card ${isUnknown ? 'not-found' : ''}`;
+        card.style.animationDelay = `${i * 0.08}s`;
+
+        card.innerHTML = `
+          <div class="atomic-number">${el.number}</div>
+          <div class="symbol">${el.symbol}</div>
+          <div>
+            <div class="element-name">${el.name}</div>
+            <div class="atomic-mass">${el.mass}</div>
+          </div>
+        `;
+
+        resultsDiv.appendChild(card);
+      });
+    }
+
+    // Função para desenhar a imagem no Canvas e disparar o download
+    function gerarEBaixarImagem() {
+      if (!currentMatchedElements || currentMatchedElements.length === 0) return;
+
+      const canvas = document.getElementById('hiddenCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const cardWidth = 110;
+      const cardHeight = 125;
+      const gap = 16;
+      const paddingX = 40;
+      const paddingTop = 50;
+      const paddingBottom = 60;
+
+      // Calcular dimensões da imagem baseadas no número de cartões
+      const totalWidth = Math.max(500, (currentMatchedElements.length * cardWidth) + ((currentMatchedElements.length - 1) * gap) + (paddingX * 2));
+      const totalHeight = paddingTop + cardHeight + paddingBottom;
+
+      canvas.width = totalWidth;
+      canvas.height = totalHeight;
+
+      // Fundo Gradiente Escuro
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, '#0f172a');
+      gradient.addColorStop(1, '#1e293b');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Calcular offset inicial X para centralizar os blocos
+      const contentWidth = (currentMatchedElements.length * cardWidth) + ((currentMatchedElements.length - 1) * gap);
+      let startX = (canvas.width - contentWidth) / 2;
+
+      // Desenhar cada quadradinho de elemento no Canvas
+      currentMatchedElements.forEach((el) => {
+        // Fundo do cartão
+        ctx.fillStyle = '#1e293b';
+        ctx.strokeStyle = el.number === "-" ? '#64748b' : '#38bdf8';
+        ctx.lineWidth = 2;
+        
+        // Retângulo arredondado
+        ctx.beginPath();
+        ctx.roundRect(startX, paddingTop, cardWidth, cardHeight, 12);
+        ctx.fill();
+        ctx.stroke();
+
+        // Número atômico
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = 'bold 12px Segoe UI, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(el.number, startX + 10, paddingTop + 20);
+
+        // Símbolo do elemento
+        ctx.fillStyle = '#f8fafc';
+        ctx.font = 'bold 36px Segoe UI, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(el.symbol, startX + (cardWidth / 2), paddingTop + 68);
+
+        // Nome do elemento
+        ctx.fillStyle = '#cbd5e1';
+        ctx.font = '11px Segoe UI, sans-serif';
+        ctx.fillText(el.name, startX + (cardWidth / 2), paddingTop + 98);
+
+        // Massa atômica
+        ctx.fillStyle = '#64748b';
+        ctx.font = '10px Segoe UI, sans-serif';
+        ctx.fillText(el.mass, startX + (cardWidth / 2), paddingTop + 112);
+
+        startX += cardWidth + gap;
+      });
+
+      // Marca d'água / Crédito na parte inferior
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '13px Segoe UI, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Gerado por: ${PLATAFORMA_URL}`, canvas.width / 2, canvas.height - 20);
+
+      // Disparar o download em formato PNG
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const rawInput = document.getElementById('nameInput').value.trim() || 'nome';
+        
+        link.href = url;
+        link.download = `tabela-${rawInput.toLowerCase().replace(/\s+/g, '-')}.png`;
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    }
+
+    // Gerar automaticamente na abertura
+    window.onload = convertName;
+
+    // Permitir dar Enter no campo de entrada
+    document.getElementById('nameInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        convertName();
+      }
+    });
+  </script>
+</body>
+</html>
